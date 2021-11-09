@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CPPREDIS_VERSION=4.3.1
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git cmake make
 
 while [[ $# -gt 0 ]]; do
@@ -34,7 +34,7 @@ if [ ! -d ./cpp_redis-${CPPREDIS_VERSION}/install ]; then
   cmake -S . -B release\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    && cmake --build release --target install\
+    && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi

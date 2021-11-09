@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 UNWIND_VERSION=v1.6-stable
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git make autoreconf
 
 while [[ $# -gt 0 ]]; do

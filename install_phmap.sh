@@ -4,7 +4,7 @@ PHMAP_VERSION=1.33
 
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git
 
 while [[ $# -gt 0 ]]; do

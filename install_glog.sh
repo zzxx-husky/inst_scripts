@@ -5,7 +5,7 @@ GLOG_VERSION=v0.5.0
 DIR="${script_dir}"
 WITH_LIBUNWIND=false
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git make cmake
 
 while [[ $# -gt 0 ]]; do
@@ -44,7 +44,7 @@ if [ ! -d ./glog-${GLOG_VERSION}/install ]; then
     -DWITH_GFLAGS=OFF\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
     -DCMAKE_BUILD_TYPE=Release\
-    && cmake --build release --target install\
+    && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi

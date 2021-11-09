@@ -44,7 +44,7 @@ if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
   cmake -S . -B release\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    && cmake --build release --target install\
+    && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi

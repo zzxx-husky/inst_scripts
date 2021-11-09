@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GPERF_VERSION=gperftools-2.9.1
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git make
 
 while [[ $# -gt 0 ]]; do

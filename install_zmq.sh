@@ -5,7 +5,7 @@ CPPZMQ_VERSION=v4.8.1
 
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git make cmake
 
 while [[ $# -gt 0 ]]; do
@@ -36,7 +36,7 @@ if [ ! -d ./libzmq-${ZMQ_VERSION}/install ]; then
     -DZMQ_BUILD_TESTS=OFF\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    && cmake --build release --target install\
+    && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi

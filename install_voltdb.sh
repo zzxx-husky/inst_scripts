@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 VOLTDB_VERSION=master
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git make
 
 while [[ $# -gt 0 ]]; do
@@ -20,21 +20,30 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+${script_dir}/install_boost.sh --dir=${DIR}
+
 cd ${DIR}
 
 if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION}/install ]; then
   if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION} ]; then
     git clone --depth 1 http://github.com/VoltDB/voltdb-client-cpp --branch ${VOLTDB_VERSION} voltdb-client-cpp-${VOLTDB_VERSION}
   fi
-  cd voltdb-client-cpp-${VOLTDB_VERSION};
-  if [ ! -z "$(cat ~/.bashrc | grep BOOST_ROOT)" ]; then
-    boost_root=$(cat ~/.bashrc | grep BOOST_ROOT | awk -F'=' '{print $2}')
-    sed -i "s+BOOST_INCLUDES=.*+BOOST_INCLUDES=${boost_root}/include+" makefile
-    sed -i "s+BOOST_LIBS=.*+BOOST_LIBS=${boost_root}/lib+" makefile
+  cd voltdb-client-cpp-${VOLTDB_VERSION}
+  source ~/.bashrc
+  if [ ! -z "$(cat ~/.bashrc | grep "^export BOOST_ROOT=")" ]; then
+    boost_root=$(cat ~/.bashrc | grep "^export BOOST_ROOT=" | awk -F'=' '{print $2}')
+    sed -i "s|BOOST_INCLUDES=.*|BOOST_INCLUDES=${boost_root}/include|" makefile || {
+      echo sed -i "s|BOOST_INCLUDES=.*|BOOST_INCLUDES=${boost_root}/include|" makefile;
+      exit 1;
+    }
+    sed -i "s|BOOST_LIBS=.*|BOOST_LIBS=${boost_root}/lib|" makefile || {
+      echo sed -i "s|BOOST_LIBS=.*|BOOST_LIBS=${boost_root}/lib|" makefile;
+      exit 1;
+    }
   fi
-  if ! make; then
+  if ! make -j4; then
     sed -i 's/static const double NULL_COORDINATE /static constexpr double NULL_COORDINATE /g' include/GeographyPoint.hpp
-    make;
+    make -j4 || { exit 1; }
   fi
   mv $(ls -td */ | grep voltdb-client-cpp | head -n 1) install;
   mkdir install/tmp

@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GTEST_VERSION=release-1.11.0
 DIR="${script_dir}"
 
-source utils.sh
+source ${script_dir}/utils.sh
 checktool git cmake make 
 
 while [[ $# -gt 0 ]]; do
@@ -32,7 +32,7 @@ if [ ! -d ./googletest-${GTEST_VERSION}/release ]; then
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_CXX_STANDARD=11\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    && make all -j4\
+    && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi
