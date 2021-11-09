@@ -1,3 +1,5 @@
+[![CI](https://github.com/zzxx-husky/inst_scripts/actions/workflows/test_all_scripts.yml/badge.svg)](https://github.com/zzxx-husky/inst_scripts/actions/workflows/test_all_scripts.yml)
+
 This repo stores scripts for installing different libraries.
 
 Each script roughly contains the following steps:
