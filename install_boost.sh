@@ -32,7 +32,7 @@ fi
 
 if [ ! -d ./boost_${BOOST_VERSION}/install ]; then
   if [ ! -d ./boost_${BOOST_VERSION} ]; then
-    wget http://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${VER}.tar.gz || { exit 1; }
+    wget -q http://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${VER}.tar.gz || { exit 1; }
     tar xf boost_${VER}.tar.gz
     rm boost_${VER}.tar.gz
     mv boost_${VER} boost_${BOOST_VERSION}

@@ -32,7 +32,7 @@ if [ ! -d ./googletest-${GTEST_VERSION}/release ]; then
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_CXX_STANDARD=11\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    && make all -j4\
+    && cmake --build release --target install\
     || { exit 1; }
   cd ..
 fi
