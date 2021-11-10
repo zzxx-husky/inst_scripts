@@ -3,7 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ZAF_VERSION=master
 DIR="${script_dir}"
 DEPS_ONLY=false
-WITHOUT_BOOST=false
+WITH_PYZAF=false
 INSTRC=${script_dir}/instrc.sh
 
 while [[ $# -gt 0 ]]; do
@@ -16,8 +16,8 @@ while [[ $# -gt 0 ]]; do
       ZAF_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
-    "--without-boost")
-      WITHOUT_BOOST=true ;;
+    "--with-zaf")
+      WITH_PYZAF=true ;;
     "--instrc="*)
       INSTRC="${key#*=}" ;;
     *)
@@ -32,7 +32,7 @@ for i in gtest glog zmq phmap; do
   fi
 done
 
-if [ ! ${WITHOUT_BOOST} ]; then
+if [ "${WITH_PYZAF}" == true ]; then
   bash ${script_dir}/install_boost.sh\
     --dir=${DIR}\
     --with-python=$(which python3)\
