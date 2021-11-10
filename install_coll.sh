@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-bash ${script_dir}/install_zaf.sh --dir=${DIR} --without-boost --instrc=${INSTRC} || { exit 1; }
+bash ${script_dir}/install_zaf.sh --dir=${DIR} --instrc=${INSTRC} || { exit 1; }
 bash ${script_dir}/install_gtest.sh --dir=${DIR} --instrc=${INSTRC} || { exit 1; }
 
 if [ "${DEPS_ONLY}" = true ]; then
