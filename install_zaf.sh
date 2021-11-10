@@ -3,6 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ZAF_VERSION=master
 DIR="${script_dir}"
 DEPS_ONLY=false
+WITHOUT_BOOST=false
 
 while [[ $# -gt 0 ]]; do
   key=$1
@@ -14,6 +15,8 @@ while [[ $# -gt 0 ]]; do
       ZAF_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--without-boost")
+      WITHOUT_BOOST=true ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -21,12 +24,17 @@ while [[ $# -gt 0 ]]; do
 done
 
 for i in gtest glog zmq phmap; do
-  if ! ${script_dir}/install_${i}.sh --dir=${DIR}; then
+  if ! bash ${script_dir}/install_${i}.sh --dir=${DIR}; then
     exit 1;
   fi
 done
 
-${script_dir}/install_boost.sh --dir=${DIR} --with-python=$(which python3) || { exit 1; }
+if [ ! ${WITHOUT_BOOST} ]; then
+  bash ${script_dir}/install_boost.sh\
+    --dir=${DIR}\
+    --with-python=$(which python3)\
+    || { exit 1; }
+fi
 
 if [ "${DEPS_ONLY}" = true ]; then
   exit 0;
@@ -34,6 +42,8 @@ fi
 
 source ${script_dir}/utils.sh
 checktool git cmake make || { exit 1; }
+
+cd ${DIR}
 
 if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
   if [ ! -d ./zaf-${ZAF_VERSION} ]; then

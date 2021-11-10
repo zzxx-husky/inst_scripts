@@ -20,11 +20,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for i in zaf gtest; do
-  if ! ${script_dir}/install_${i}.sh --dir=${DIR}; then
-    exit 1;
-  fi
-done
+bash ${script_dir}/install_zaf.sh --dir=${DIR} --without-boost || { exit 1; }
+bash ${script_dir}/install_gtest.sh --dir=${DIR} || { exit 1; }
 
 if [ "${DEPS_ONLY}" = true ]; then
   exit 0;
@@ -32,6 +29,8 @@ fi
 
 source ${script_dir}/utils.sh
 checktool git || { exit 1; }
+
+cd ${DIR}
 
 if [ ! -d ./coll-${COLL_VERSION}/install ]; then
   if [ ! -d ./coll-${COLL_VERSION} ]; then

@@ -22,7 +22,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-nova:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -73,6 +73,11 @@ jobs:
       - name: install voltdb-client-cpp
         run: |
           ./install_voltdb.sh
+
+  build-cmake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
       - name: install cmake
         run: |
