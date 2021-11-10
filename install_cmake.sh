@@ -34,7 +34,6 @@ cd cmake-${CMAKE_VERSION}
   || { exit 1; }
 cd ..
 
-echo "CMake (${CMAKE_VERSION}) is installed under $(pwd)/cmake-${CMAKE_VERSION}/install. Consider to add the followings into ~/.bashrc to use it and remove the old CMake:"
-echo "  echo \"export CMAKE_ROOT=$(pwd)/cmake-${CMAKE_VERSION}/install\" >> ~/.bashrc"
-echo "  echo \"export PATH=\\\${CMAKE_ROOT}/bin:\\\${PATH}\" >> ~/.bashrc"
-echo "  source ~/.bashrc"
+echo "CMake (${CMAKE_VERSION}) is installed under $(pwd)/cmake-${CMAKE_VERSION}/install. Consider to add the followings commands to use the new CMake and remove the old one:"
+echo "  export CMAKE_ROOT=$(pwd)/cmake-${CMAKE_VERSION}/install"
+echo "  export PATH=\\\${CMAKE_ROOT}/bin:\\\${PATH}"

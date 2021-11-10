@@ -14,7 +14,7 @@ Each script roughly contains the following steps:
 
 5. Install the headers and libs into specified directory.
 
-6. Mark down in `~/.bashrc` where the headers and libs of the library are located
+6. Mark down in `instrc.sh` where the headers and libs of the library are located
 
 Compared to commonly used package managers (e.g., apt, brew, etc), these scripts make it clear
 where the libraries are downloaded and installed, and also make it clear to keep multiple versions

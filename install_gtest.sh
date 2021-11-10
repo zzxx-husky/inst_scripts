@@ -2,6 +2,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 GTEST_VERSION=release-1.11.0
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git cmake make 
@@ -14,6 +15,8 @@ while [[ $# -gt 0 ]]; do
       GTEST_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -36,10 +39,10 @@ if [ ! -d ./googletest-${GTEST_VERSION}/release ]; then
     || { exit 1; }
   cd ..
 fi
-if [ -z "$(cat ~/.bashrc | grep "^export GTEST_ROOT=")" ]; then
-  echo "export GTEST_ROOT=$(pwd)/googletest-${GTEST_VERSION}/install/" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${GTEST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${GTEST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export GTEST_ROOT=")" ]; then
+  echo "export GTEST_ROOT=$(pwd)/googletest-${GTEST_VERSION}/install/" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${GTEST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${GTEST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "GoogleTest (${GTEST_VERSION}) is installed under $(pwd)/googletest-${GTEST_VERSION}"

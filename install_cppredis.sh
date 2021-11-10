@@ -2,6 +2,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 CPPREDIS_VERSION=4.3.1
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git cmake make
@@ -14,6 +15,8 @@ while [[ $# -gt 0 ]]; do
       CPPREDIS_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -39,11 +42,10 @@ if [ ! -d ./cpp_redis-${CPPREDIS_VERSION}/install ]; then
   cd ..
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export CPPREDIS_ROOT=")" ]; then
-  echo "export CPPREDIS_ROOT=$(pwd)/cpp_redis-${CPPREDIS_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${CPPREDIS_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${CPPREDIS_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
-  source ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export CPPREDIS_ROOT=")" ]; then
+  echo "export CPPREDIS_ROOT=$(pwd)/cpp_redis-${CPPREDIS_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${CPPREDIS_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${CPPREDIS_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "CPPRedis (${CPPREDIS_VERSION}) is installed under $(pwd)/cpp_redis-${CPPREDIS_VERSION}"

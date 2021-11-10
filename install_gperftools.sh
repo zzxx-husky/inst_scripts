@@ -2,6 +2,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 GPERF_VERSION=gperftools-2.9.1
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git make
@@ -14,6 +15,8 @@ while [[ $# -gt 0 ]]; do
       GPERF_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -35,11 +38,11 @@ if [ ! -d ./gperftools-${GPERF_VERSION}/install ]; then
   cd ..
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export GPERF_ROOT=")" ]; then
-  echo "export GPERF_ROOT=$(pwd)/gperftools-${GPERF_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${GPERF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${GPERF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
-  echo "export PATH=\${GPERF_ROOT}/bin:\${PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export GPERF_ROOT=")" ]; then
+  echo "export GPERF_ROOT=$(pwd)/gperftools-${GPERF_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${GPERF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${GPERF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
+  echo "export PATH=\${GPERF_ROOT}/bin:\${PATH}" >> ${INSTRC}
 fi
 
 echo "GperfTools (${GPERF_VERSION}) is installed under $(pwd)/gperftools-${GPERF_VERSION}"

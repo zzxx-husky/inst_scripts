@@ -4,6 +4,7 @@ ZAF_VERSION=master
 DIR="${script_dir}"
 DEPS_ONLY=false
 WITHOUT_BOOST=false
+INSTRC=${script_dir}/instrc.sh
 
 while [[ $# -gt 0 ]]; do
   key=$1
@@ -17,6 +18,8 @@ while [[ $# -gt 0 ]]; do
       DIR="${key#*=}" ;;
     "--without-boost")
       WITHOUT_BOOST=true ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -24,7 +27,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 for i in gtest glog zmq phmap; do
-  if ! bash ${script_dir}/install_${i}.sh --dir=${DIR}; then
+  if ! bash ${script_dir}/install_${i}.sh --dir=${DIR} --instrc=${INSTRC}; then
     exit 1;
   fi
 done
@@ -33,6 +36,7 @@ if [ ! ${WITHOUT_BOOST} ]; then
   bash ${script_dir}/install_boost.sh\
     --dir=${DIR}\
     --with-python=$(which python3)\
+    --instrc=${INSTRC}\
     || { exit 1; }
 fi
 
@@ -50,7 +54,7 @@ if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
     git clone --depth 1 --branch ${ZAF_VERSION} http://github.com/zzxx-husky/zaf zaf-${ZAF_VERSION}
   fi
   cd zaf-${ZAF_VERSION}
-  source ~/.bashrc
+  source ${INSTRC}
   cmake -S . -B release\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
@@ -59,10 +63,10 @@ if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
   cd ..
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export ZAF_ROOT=")" ]; then
-  echo "export ZAF_ROOT=$(pwd)/zaf-${ZAF_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${ZAF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${ZAF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export ZAF_ROOT=")" ]; then
+  echo "export ZAF_ROOT=$(pwd)/zaf-${ZAF_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${ZAF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${ZAF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "ZAF (${ZAF_VERSION}) is installed under $(pwd)/zaf-${ZAF_VERSION}"

@@ -2,8 +2,8 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ZMQ_VERSION=v4.3.4
 CPPZMQ_VERSION=v4.8.1
-
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git make cmake
@@ -18,6 +18,8 @@ while [[ $# -gt 0 ]]; do
       CPPZMQ_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -46,10 +48,10 @@ if [ ! -d ./cppzmq-${CPPZMQ_VERSION} ]; then
   cp cppzmq-${CPPZMQ_VERSION}/zmq_addon.hpp libzmq-${ZMQ_VERSION}/install/include
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export ZMQ_ROOT=")" ]; then
-  echo "export ZMQ_ROOT=$(pwd)/libzmq-${ZMQ_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${ZMQ_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${ZMQ_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export ZMQ_ROOT=")" ]; then
+  echo "export ZMQ_ROOT=$(pwd)/libzmq-${ZMQ_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${ZMQ_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${ZMQ_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "Libzmq (${ZMQ_VERSION}) is installed under $(pwd)/libzmq-${ZMQ_VERSION}"

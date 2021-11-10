@@ -1,9 +1,9 @@
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 GLOG_VERSION=v0.5.0
-
 DIR="${script_dir}"
 WITH_LIBUNWIND=false
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git make cmake
@@ -18,6 +18,8 @@ while [[ $# -gt 0 ]]; do
       DIR="${key#*=}" ;;
     "--with-libunwind")
       WITH_LIBUNWIND=true ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -26,7 +28,7 @@ done
 
 if [ "${WITH_LIBUNWIND}" = true ]; then
   ${script_dir}/install_libunwind.sh --dir=${DIR}
-  source ~/.bashrc
+  source ${INSTRC}
   WITH_LIBUNWIND=ON
 else
   WITH_LIBUNWIND=OFF
@@ -48,10 +50,10 @@ if [ ! -d ./glog-${GLOG_VERSION}/install ]; then
     || { exit 1; }
   cd ..
 fi
-if [ -z "$(cat ~/.bashrc | grep "^export GLOG_ROOT=")" ]; then
-  echo "export GLOG_ROOT=$(pwd)/glog-${GLOG_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${GLOG_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${GLOG_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export GLOG_ROOT=")" ]; then
+  echo "export GLOG_ROOT=$(pwd)/glog-${GLOG_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${GLOG_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${GLOG_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "GLOG (${GLOG_VERSION}) is installed under $(pwd)/glog-${GLOG_VERSION}"

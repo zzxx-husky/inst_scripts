@@ -3,6 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 COLL_VERSION=master
 DIR="${script_dir}"
 DEPS_ONLY=false
+INSTRC=${script_dir}/instrc.sh
 
 while [[ $# -gt 0 ]]; do
   key=$1
@@ -14,14 +15,16 @@ while [[ $# -gt 0 ]]; do
       COLL_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
   esac
 done
 
-bash ${script_dir}/install_zaf.sh --dir=${DIR} --without-boost || { exit 1; }
-bash ${script_dir}/install_gtest.sh --dir=${DIR} || { exit 1; }
+bash ${script_dir}/install_zaf.sh --dir=${DIR} --without-boost --instrc=${INSTRC} || { exit 1; }
+bash ${script_dir}/install_gtest.sh --dir=${DIR} --instrc=${INSTRC} || { exit 1; }
 
 if [ "${DEPS_ONLY}" = true ]; then
   exit 0;
@@ -38,9 +41,9 @@ if [ ! -d ./coll-${COLL_VERSION}/install ]; then
   fi
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export COLL_ROOT=")" ]; then
-  echo "export COLL_ROOT=$(pwd)/coll-${COLL_VERSION}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${COLL_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export COLL_ROOT=")" ]; then
+  echo "export COLL_ROOT=$(pwd)/coll-${COLL_VERSION}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${COLL_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "COLL (${COLL_VERSION}) is installed under $(pwd)/coll-${COLL_VERSION}"

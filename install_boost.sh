@@ -3,6 +3,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BOOST_VERSION=1.77.0
 WITH_PYTHON= # empty to disable python
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool wget tar
@@ -17,6 +18,8 @@ while [[ $# -gt 0 ]]; do
       WITH_PYTHON="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -45,10 +48,10 @@ if [ ! -d ./boost-${BOOST_VERSION}/install ]; then
   cd ..
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export BOOST_ROOT=")" ]; then
-  echo "export BOOST_ROOT=$(pwd)/boost-${BOOST_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${BOOST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${BOOST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export BOOST_ROOT=")" ]; then
+  echo "export BOOST_ROOT=$(pwd)/boost-${BOOST_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${BOOST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${BOOST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "Boost (${BOOST_VERSION}) is installed under $(pwd)/boost-${BOOST_VERSION}"

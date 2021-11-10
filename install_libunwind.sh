@@ -2,6 +2,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 UNWIND_VERSION=v1.6-stable
 DIR="${script_dir}"
+INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
 checktool git make autoreconf
@@ -14,6 +15,8 @@ while [[ $# -gt 0 ]]; do
       CMAKE_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
+    "--instrc="*)
+      INSTRC="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -35,10 +38,10 @@ if [ ! -d ./libunwind-${UNWIND_VERSION}/install ]; then
   cd ..
 fi
 
-if [ -z "$(cat ~/.bashrc | grep "^export LIBUNWIND_ROOT=")" ]; then
-  echo "export LIBUNWIND_ROOT=$(pwd)/libunwind-${UNWIND_VERSION}/install" >> ~/.bashrc
-  echo "export LD_LIBRARY_PATH=\${LIBUNWIND_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ~/.bashrc
-  echo "export CMAKE_PREFIX_PATH=\${LIBUNWIND_ROOT}:\${CMAKE_PREFIX_PATH}" >> ~/.bashrc
+if [ -z "$(cat ${INSTRC} | grep "^export LIBUNWIND_ROOT=")" ]; then
+  echo "export LIBUNWIND_ROOT=$(pwd)/libunwind-${UNWIND_VERSION}/install" >> ${INSTRC}
+  echo "export LD_LIBRARY_PATH=\${LIBUNWIND_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export CMAKE_PREFIX_PATH=\${LIBUNWIND_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
 echo "Libunwind (${UNWIND_VERSION}) is installed under $(pwd)/libunwind-${UNWIND_VERSION}"
