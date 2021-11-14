@@ -3,7 +3,10 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ZAF_VERSION=master
 DIR="${script_dir}"
 DEPS_ONLY=false
-WITH_PYZAF=false
+ENABLE_PYZAF=OFF
+ENABLE_TEST=ON
+ENABLE_PHMAP=ON
+ENABLE_TCMALLOC=ON
 INSTRC=${script_dir}/instrc.sh
 
 while [[ $# -gt 0 ]]; do
@@ -16,8 +19,14 @@ while [[ $# -gt 0 ]]; do
       ZAF_VERSION="${key#*=}" ;;
     "--dir="*)
       DIR="${key#*=}" ;;
-    "--with-zaf")
-      WITH_PYZAF=true ;;
+    *"able-pyzaf")
+      if [[ "${key}" =~ ^--en.* ]]; then ENABLE_PYZAF=ON; else ENABLE_PYZAF=OFF; fi ;;
+    *"able-test")
+      if [[ "${key}" =~ ^--en.* ]]; then ENABLE_TEST=ON; else ENABLE_TEST=OFF; fi ;;
+    *"able-phmap")
+      if [[ "${key}" =~ ^--en.* ]]; then ENABLE_PHMAP=ON; else ENABLE_PHMAP=OFF; fi ;;
+    *"able-tcmalloc")
+      if [[ "${key}" =~ ^--en.* ]]; then ENABLE_TCMALLOC=ON; else ENABLE_TCMALLOC=OFF; fi ;;
     "--instrc="*)
       INSTRC="${key#*=}" ;;
     *)
@@ -26,18 +35,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for i in gtest glog zmq phmap; do
+for i in glog zmq; do
   if ! bash ${script_dir}/install_${i}.sh --dir=${DIR} --instrc=${INSTRC}; then
     exit 1;
   fi
 done
 
-if [ "${WITH_PYZAF}" == true ]; then
-  bash ${script_dir}/install_boost.sh\
-    --dir=${DIR}\
-    --with-python=$(which python3)\
-    --instrc=${INSTRC}\
-    || { exit 1; }
+func=(TEST PHMAP TCMALLOC)
+libs=(gtest phmap gperftools)
+
+for i in "${!func[@]}"; do
+  ENABLE_FUNC=ENABLE_${func[${i}]}
+  if [ "${!ENABLE_FUNC}" == ON ]; then
+    bash ${script_dir}/install_${libs[${i}]}.sh --dir=${DIR} --instrc=${INSTRC} || { exit 1; }
+  fi
+done
+
+if [ "${ENABLE_PYZAF}" == ON ]; then
+  bash ${script_dir}/install_boost.sh --dir=${DIR} --instrc=${INSTRC}\
+    --with-python=$(which python3) || { exit 1; }
 fi
 
 if [ "${DEPS_ONLY}" = true ]; then
@@ -58,6 +74,9 @@ if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
   cmake -S . -B release\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DENABLE_TEST=${ENABLE_TEST}\
+    -DENABLE_PHMAP=${ENABLE_PHMAP}\
+    -DENABLE_TCMALLOC=${ENABLE_TCMALLOC}\
     && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
