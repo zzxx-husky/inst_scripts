@@ -66,9 +66,10 @@ jobs:
         run: |
           ./install_rdkafka.sh
 
-      - name: install cppredis
+      - name: install hiredis
         run: |
-          ./install_cppredis.sh
+          ./install_libevent.sh
+          ./install_hiredis.sh
 
       - name: install voltdb-client-cpp
         run: |
