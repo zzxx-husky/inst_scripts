@@ -17,7 +17,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for i in zaf boost gperftools coll gtest; do
+for i in zaf boost gperftools coll gtest glog; do
   ${script_dir}/install_${i}.sh\
     --dir=${DIR}\
     --instrc=${INSTRC}

@@ -7,6 +7,7 @@ ENABLE_PYZAF=OFF
 ENABLE_TEST=ON
 ENABLE_PHMAP=ON
 ENABLE_TCMALLOC=ON
+MODE=Release
 INSTRC=${script_dir}/instrc.sh
 
 while [[ $# -gt 0 ]]; do
@@ -29,6 +30,8 @@ while [[ $# -gt 0 ]]; do
       if [[ "${key}" =~ ^--en.* ]]; then ENABLE_TCMALLOC=ON; else ENABLE_TCMALLOC=OFF; fi ;;
     "--instrc="*)
       INSTRC="${key#*=}" ;;
+    "--mode="*)
+      MODE="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -65,27 +68,33 @@ checktool git cmake make || { exit 1; }
 
 cd ${DIR}
 
-if [ ! -d ./zaf-${ZAF_VERSION}/install ]; then
-  if [ ! -d ./zaf-${ZAF_VERSION} ]; then
-    git clone --depth 1 --branch ${ZAF_VERSION} http://github.com/zzxx-husky/zaf zaf-${ZAF_VERSION}
+if [ "${MODE}" = "Release" ]; then
+  ZAF_DIR="zaf-${ZAF_VERSION}"
+else
+  ZAF_DIR="zaf-${ZAF_VERSION}-${MODE}"
+fi
+
+if [ ! -d ./${ZAF_DIR}/install ]; then
+  if [ ! -d ./${ZAF_DIR} ]; then
+    git clone --depth 1 --branch ${ZAF_VERSION} http://github.com/zzxx-husky/zaf ${ZAF_DIR}
   fi
-  cd zaf-${ZAF_VERSION}
+  cd ${ZAF_DIR}
   source ${INSTRC}
-  cmake -S . -B release\
-    -DCMAKE_BUILD_TYPE=Release\
+  cmake -S . -B ${MODE}\
+    -DCMAKE_BUILD_TYPE=${MODE}\
     -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
     -DENABLE_TEST=${ENABLE_TEST}\
     -DENABLE_PHMAP=${ENABLE_PHMAP}\
     -DENABLE_TCMALLOC=${ENABLE_TCMALLOC}\
-    && cmake --build release --target install -j4\
+    && cmake --build ${MODE} --target install -j4\
     || { exit 1; }
   cd ..
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export ZAF_ROOT=")" ]; then
-  echo "export ZAF_ROOT=$(pwd)/zaf-${ZAF_VERSION}/install" >> ${INSTRC}
+  echo "export ZAF_ROOT=$(pwd)/${ZAF_DIR}/install" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${ZAF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${ZAF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
-echo "ZAF (${ZAF_VERSION}) is installed under $(pwd)/zaf-${ZAF_VERSION}"
+echo "ZAF (${ZAF_VERSION}) is installed under $(pwd)/${ZAF_DIR}."
