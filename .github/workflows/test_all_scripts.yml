@@ -60,7 +60,7 @@ jobs:
 
       - name: install nova
         run: |
-          ./install_nova.sh
+          ./install_nova.sh --deps-only # true because nova is not open-sourced yet
 
       - name: install rdkafka
         run: |
