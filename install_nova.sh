@@ -48,6 +48,23 @@ for i in zaf boost gperftools coll gtest glog; do
     --instrc=${INSTRC}
 done
 
+if [ "${ENABLE_REDIS}" = "ON" ]; then
+  ${script_dir}/install_libevent.sh\
+    --dir=${DIR}\
+    --instrc=${INSTRC}
+
+  ${script_dir}/install_hiredis.sh\
+    --dir=${DIR}\
+    --instrc=${INSTRC}
+fi
+
+if [ "${ENABLE_KAFKA}" = "ON" ]; then
+  ${script_dir}/install_rdkafka.sh\
+    --dir=${DIR}\
+    --instrc=${INSTRC}
+fi
+
+
 if [ "${DEPS_ONLY}" = true ]; then
   exit 0;
 fi

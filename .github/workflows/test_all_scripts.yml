@@ -58,10 +58,6 @@ jobs:
         run: |
           ./install_coll.sh
 
-      - name: install nova
-        run: |
-          ./install_nova.sh --deps-only # true because nova is not open-sourced yet
-
       - name: install rdkafka
         run: |
           ./install_rdkafka.sh
@@ -70,6 +66,10 @@ jobs:
         run: |
           ./install_libevent.sh
           ./install_hiredis.sh
+
+      - name: install nova
+        run: |
+          ./install_nova.sh --deps-only --enable-redis --enable-kafka # true because nova is not open-sourced yet
 
       - name: install voltdb-client-cpp
         run: |
