@@ -28,7 +28,9 @@ fi
 
 cd cmake-${CMAKE_VERSION}
 ./bootstrap\
+  --parallel=4\
   --prefix=$(pwd)/install\
+  -- -DCMAKE_USE_OPENSSL=OFF\
   && make -j4\
   && make install\
   || { exit 1; }

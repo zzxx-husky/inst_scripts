@@ -35,13 +35,16 @@ fi
 
 if [ ! -d ./boost-${BOOST_VERSION}/install ]; then
   if [ ! -d ./boost-${BOOST_VERSION} ]; then
+    echo "Downloading boost-${BOOST_VERSION}"
     wget -q http://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${VER}.tar.gz || { exit 1; }
+    echo "Decompressing boost-${BOOST_VERSION}"
     tar xf boost_${VER}.tar.gz
     rm boost_${VER}.tar.gz
     mv boost_${VER} boost-${BOOST_VERSION}
   fi
   cd boost-${BOOST_VERSION}
   rm -rf $(pwd)/install/
+  echo "Installing boost-${BOOST_VERSION}"
   ./bootstrap.sh --prefix=$(pwd)/install/ ${WITH_PYTHON} || { exit 1; }
   ./b2 --clean
   ./b2 -j4 threading=multi cxxflags="-fPIC" link=shared variant=release install || { exit 1; }
