@@ -2,6 +2,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 RDKAFKA_VERSION=v1.8.2
 DIR="${script_dir}"
+MODE=
 INSTRC=${script_dir}/instrc.sh
 
 source ${script_dir}/utils.sh
@@ -17,6 +18,8 @@ while [[ $# -gt 0 ]]; do
       DIR="${key#*=}" ;;
     "--instrc="*)
       INSTRC="${key#*=}" ;;
+    "--mode="*)
+      MODE="${key#*=}" ;;
     *)
       echo "Unknow argument: ${key}"
       exit 1;;
@@ -25,12 +28,24 @@ done
 
 cd ${DIR}
 
-if [ ! -d ./librdkafka-${RDKAFKA_VERSION}/install ]; then
-  if [ ! -d ./librdkafka-${RDKAFKA_VERSION} ]; then
-    git clone --depth 1 http://github.com/edenhill/librdkafka --branch ${RDKAFKA_VERSION} librdkafka-${RDKAFKA_VERSION}
+if [ -z "${MODE}" ]; then
+  RDKAFKA_DIR=librdkafka-${RDKAFKA_VERSION}
+  DEBUG=
+elif [ "${MODE}" = "debug" ]; then
+  RDKAFKA_DIR=librdkafka-${RDKAFKA_VERSION}-debug
+  DEBUG="--disable-optimization"
+else
+  echo "Unknown mode: ${MODE}"
+  exit 1
+fi
+
+if [ ! -d ./${RDKAFKA_DIR}/install ]; then
+  if [ ! -d ./${RDKAFKA_DIR} ]; then
+    git clone --depth 1 http://github.com/edenhill/librdkafka --branch ${RDKAFKA_VERSION} ${RDKAFKA_DIR}
   fi
-  cd librdkafka-${RDKAFKA_VERSION}
+  cd ${RDKAFKA_DIR}
   ./configure\
+    ${DEBUG}\
     --prefix=$(pwd)/install\
     --disable-sasl\
     --disable-ssl\

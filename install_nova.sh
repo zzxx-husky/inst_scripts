@@ -10,6 +10,7 @@ ENABLE_TESTS=ON
 ENABLE_PROFILER=OFF
 ENABLE_HEAP_PROFILER=OFF
 ENABLE_FAULT_TOLERANCE=OFF
+ENABLE_SQL=OFF
 MODE=Release
 
 while [[ $# -gt 0 ]]; do
@@ -34,6 +35,8 @@ while [[ $# -gt 0 ]]; do
       if [[ "${key}" =~ ^--en.* ]]; then ENABLE_HEAP_PROFILER=ON; else ENABLE_HEAP_PROFILER=OFF; fi ;;
     *"able-fault-tolerance")
       if [[ "${key}" =~ ^--en.* ]]; then ENABLE_FAULT_TOLERANCE=ON; else ENABLE_FAULT_TOLERANCE=OFF; fi ;;
+    *"able-sql")
+      if [[ "${key}" =~ ^--en.* ]]; then ENABLE_SQL=ON; else ENABLE_SQL=OFF; fi ;;
     "--mode="*)
       MODE="${key#*=}" ;;
     *)
@@ -95,6 +98,7 @@ if [ ! -d ./${NOVA_DIR}/install ]; then
     -DENABLE_PROFILER=${ENABLE_PROFILER}\
     -DENABLE_HEAP_PROFILER=${ENABLE_HEAP_PROFILER}\
     -DENABLE_FAULT_TOLERANCE=${ENABLE_FAULT_TOLERANCE}\
+    -DENABLE_SQL=${ENABLE_SQL}\
     && cmake --build ${MODE} --target install -j4\
     || { exit 1; }
   cd ..
