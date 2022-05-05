@@ -29,13 +29,13 @@ fi
 cd cmake-${CMAKE_VERSION}
 ./bootstrap\
   --parallel=4\
-  --prefix=$(pwd)/install\
+  --prefix=$(pwd)/install_dir\
   -- -DCMAKE_USE_OPENSSL=OFF\
   && make -j4\
   && make install\
   || { exit 1; }
 cd ..
 
-echo "CMake (${CMAKE_VERSION}) is installed under $(pwd)/cmake-${CMAKE_VERSION}/install. Consider to add the followings commands to use the new CMake and remove the old one:"
-echo "  export CMAKE_ROOT=$(pwd)/cmake-${CMAKE_VERSION}/install"
+echo "CMake (${CMAKE_VERSION}) is installed under $(pwd)/cmake-${CMAKE_VERSION}/install_dir. Consider to add the followings commands to use the new CMake and remove the old one:"
+echo "  export CMAKE_ROOT=$(pwd)/cmake-${CMAKE_VERSION}/install_dir"
 echo "  export PATH=\${CMAKE_ROOT}/bin:\${PATH}"

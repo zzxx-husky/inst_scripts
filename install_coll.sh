@@ -35,7 +35,7 @@ checktool git || { exit 1; }
 
 cd ${DIR}
 
-if [ ! -d ./coll-${COLL_VERSION}/install ]; then
+if [ ! -d ./coll-${COLL_VERSION}/install_dir ]; then
   if [ ! -d ./coll-${COLL_VERSION} ]; then
     git clone --depth 1 --branch ${COLL_VERSION} http://github.com/zzxx-husky/coll coll-${COLL_VERSION}
   fi

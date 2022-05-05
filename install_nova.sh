@@ -83,7 +83,7 @@ else
   NOVA_DIR="nova-${NOVA_VERSION}-${MODE}"
 fi
 
-if [ ! -d ./${NOVA_DIR}/install ]; then
+if [ ! -d ./${NOVA_DIR}/install_dir ]; then
   if [ ! -d ./${NOVA_DIR} ]; then
     git clone --depth 1 --branch ${NOVA_VERSION} http://github.com/zzxx-husky/novax ${NOVA_DIR}
   fi
@@ -91,7 +91,7 @@ if [ ! -d ./${NOVA_DIR}/install ]; then
   source ${INSTRC}
   cmake -S . -B ${MODE}\
     -DCMAKE_BUILD_TYPE=${MODE}\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
     -DENABLE_TESTS=${ENABLE_TESTS}\
     -DENABLE_REDIS=${ENABLE_REDIS}\
     -DENABLE_KAFKA=${ENABLE_KAFKA}\
@@ -105,8 +105,9 @@ if [ ! -d ./${NOVA_DIR}/install ]; then
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export NOVA_ROOT=")" ]; then
-  echo "export NOVA_ROOT=$(pwd)/${NOVA_DIR}/install" >> ${INSTRC}
+  echo "export NOVA_ROOT=$(pwd)/${NOVA_DIR}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${NOVA_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${NOVA_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${NOVA_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

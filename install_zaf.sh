@@ -6,7 +6,7 @@ DEPS_ONLY=false
 ENABLE_PYZAF=OFF
 ENABLE_TEST=ON
 ENABLE_PHMAP=ON
-ENABLE_TCMALLOC=ON
+ENABLE_TCMALLOC=OFF
 MODE=Release
 INSTRC=${script_dir}/instrc.sh
 
@@ -74,7 +74,7 @@ else
   ZAF_DIR="zaf-${ZAF_VERSION}-${MODE}"
 fi
 
-if [ ! -d ./${ZAF_DIR}/install ]; then
+if [ ! -d ./${ZAF_DIR}/install_dir ]; then
   if [ ! -d ./${ZAF_DIR} ]; then
     git clone --depth 1 --branch ${ZAF_VERSION} http://github.com/zzxx-husky/zaf ${ZAF_DIR}
   fi
@@ -82,7 +82,7 @@ if [ ! -d ./${ZAF_DIR}/install ]; then
   source ${INSTRC}
   cmake -S . -B ${MODE}\
     -DCMAKE_BUILD_TYPE=${MODE}\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
     -DENABLE_TEST=${ENABLE_TEST}\
     -DENABLE_PHMAP=${ENABLE_PHMAP}\
     -DENABLE_TCMALLOC=${ENABLE_TCMALLOC}\
@@ -92,8 +92,9 @@ if [ ! -d ./${ZAF_DIR}/install ]; then
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export ZAF_ROOT=")" ]; then
-  echo "export ZAF_ROOT=$(pwd)/${ZAF_DIR}/install" >> ${INSTRC}
+  echo "export ZAF_ROOT=$(pwd)/${ZAF_DIR}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${ZAF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${ZAF_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${ZAF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

@@ -25,23 +25,24 @@ done
 
 cd ${DIR}
 
-if [ ! -d ./hiredis-${HIREDIS_VERSION}/install ]; then
+if [ ! -d ./hiredis-${HIREDIS_VERSION}/install_dir ]; then
   if [ ! -d ./hiredis-${HIREDIS_VERSION} ]; then
     git clone --depth 1 https://github.com/redis/hiredis --branch ${HIREDIS_VERSION} hiredis-${HIREDIS_VERSION}
   fi
   cd hiredis-${HIREDIS_VERSION}
   cmake -S . -B release\
     -DCMAKE_BUILD_TYPE=Release\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
-    -DCMAKE_INSTALL_LIBDIR=$(pwd)/install/lib/\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
+    -DCMAKE_INSTALL_LIBDIR=$(pwd)/install_dir/lib/\
     && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export HIREDIS_ROOT=")" ]; then
-  echo "export HIREDIS_ROOT=$(pwd)/hiredis-${HIREDIS_VERSION}/install" >> ${INSTRC}
+  echo "export HIREDIS_ROOT=$(pwd)/hiredis-${HIREDIS_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${HIREDIS_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${HIREDIS_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${HIREDIS_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

@@ -28,7 +28,7 @@ done
 
 cd ${DIR}
 
-if [ ! -d ./libzmq-${ZMQ_VERSION}/install ]; then
+if [ ! -d ./libzmq-${ZMQ_VERSION}/install_dir ]; then
   if [ ! -d ./libzmq-${ZMQ_VERSION} ]; then
     git clone --depth 1 http://github.com/zeromq/libzmq --branch ${ZMQ_VERSION} libzmq-${ZMQ_VERSION}
   fi
@@ -36,21 +36,23 @@ if [ ! -d ./libzmq-${ZMQ_VERSION}/install ]; then
   cmake -S . -B release\
     -DWITH_PERF_TOOL=OFF\
     -DZMQ_BUILD_TESTS=OFF\
+    -DAPPLE=ON\
     -DCMAKE_BUILD_TYPE=Release\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
     && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi
 if [ ! -d ./cppzmq-${CPPZMQ_VERSION} ]; then
   git clone --depth 1 http://github.com/zeromq/cppzmq --branch ${CPPZMQ_VERSION} cppzmq-${CPPZMQ_VERSION}
-  cp cppzmq-${CPPZMQ_VERSION}/zmq.hpp libzmq-${ZMQ_VERSION}/install/include
-  cp cppzmq-${CPPZMQ_VERSION}/zmq_addon.hpp libzmq-${ZMQ_VERSION}/install/include
+  cp cppzmq-${CPPZMQ_VERSION}/zmq.hpp libzmq-${ZMQ_VERSION}/install_dir/include
+  cp cppzmq-${CPPZMQ_VERSION}/zmq_addon.hpp libzmq-${ZMQ_VERSION}/install_dir/include
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export ZMQ_ROOT=")" ]; then
-  echo "export ZMQ_ROOT=$(pwd)/libzmq-${ZMQ_VERSION}/install" >> ${INSTRC}
+  echo "export ZMQ_ROOT=$(pwd)/libzmq-${ZMQ_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${ZMQ_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${ZMQ_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${ZMQ_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
