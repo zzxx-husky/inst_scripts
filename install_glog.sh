@@ -36,7 +36,7 @@ fi
 
 cd ${DIR}
 
-if [ ! -d ./glog-${GLOG_VERSION}/install ]; then
+if [ ! -d ./glog-${GLOG_VERSION}/install_dir ]; then
   if [ ! -d ./glog-${GLOG_VERSION} ]; then
     git clone --depth 1 http://github.com/google/glog --branch ${GLOG_VERSION} glog-${GLOG_VERSION}
   fi
@@ -44,15 +44,16 @@ if [ ! -d ./glog-${GLOG_VERSION}/install ]; then
   cmake -S . -B release\
     -DWITH_UNWIND=${WITH_LIBUNWIND}\
     -DWITH_GFLAGS=OFF\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
     -DCMAKE_BUILD_TYPE=Release\
     && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi
 if [ -z "$(cat ${INSTRC} | grep "^export GLOG_ROOT=")" ]; then
-  echo "export GLOG_ROOT=$(pwd)/glog-${GLOG_VERSION}/install" >> ${INSTRC}
+  echo "export GLOG_ROOT=$(pwd)/glog-${GLOG_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${GLOG_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${GLOG_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${GLOG_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

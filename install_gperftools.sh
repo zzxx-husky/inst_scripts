@@ -25,13 +25,13 @@ done
 
 cd ${DIR}
 
-if [ ! -d ./gperftools-${GPERF_VERSION}/install ]; then
+if [ ! -d ./gperftools-${GPERF_VERSION}/install_dir ]; then
   if [ ! -d ./gperftools-${GPERF_VERSION} ]; then
     git clone --depth 1 http://github.com/gperftools/gperftools --branch ${GPERF_VERSION} gperftools-${GPERF_VERSION}
   fi
   cd gperftools-${GPERF_VERSION}
   ./autogen.sh\
-    && ./configure --prefix=$(pwd)/install --enable-frame-pointers\
+    && ./configure --prefix=$(pwd)/install_dir --enable-frame-pointers\
     && make -j4\
     && make install\
     || { exit 1; }
@@ -39,8 +39,9 @@ if [ ! -d ./gperftools-${GPERF_VERSION}/install ]; then
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export GPERF_ROOT=")" ]; then
-  echo "export GPERF_ROOT=$(pwd)/gperftools-${GPERF_VERSION}/install" >> ${INSTRC}
+  echo "export GPERF_ROOT=$(pwd)/gperftools-${GPERF_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${GPERF_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${GPERF_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${GPERF_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
   echo "export PATH=\${GPERF_ROOT}/bin:\${PATH}" >> ${INSTRC}
 fi

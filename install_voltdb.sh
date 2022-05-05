@@ -27,7 +27,7 @@ ${script_dir}/install_boost.sh --dir=${DIR}
 
 cd ${DIR}
 
-if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION}/install ]; then
+if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION}/install_dir ]; then
   if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION} ]; then
     git clone --depth 1 http://github.com/VoltDB/voltdb-client-cpp --branch ${VOLTDB_VERSION} voltdb-client-cpp-${VOLTDB_VERSION}
   fi
@@ -48,19 +48,20 @@ if [ ! -d ./voltdb-client-cpp-${VOLTDB_VERSION}/install ]; then
     sed -i 's/static const double NULL_COORDINATE /static constexpr double NULL_COORDINATE /g' include/GeographyPoint.hpp
     make -j4 || { exit 1; }
   fi
-  mv $(ls -td */ | grep voltdb-client-cpp | head -n 1) install;
-  mkdir install/tmp
-  mv install/include install/tmp
-  mv install/tmp/include install/tmp/voltdb
-  mv install/tmp install/include
-  mkdir install/lib
-  mv install/*.a install/lib
-  mv install/*.so install/lib
+  mv $(ls -td */ | grep voltdb-client-cpp | head -n 1) install_dir;
+  mkdir install_dir/tmp
+  mv install_dir/include install_dir/tmp
+  mv install_dir/tmp/include install_dir/tmp/voltdb
+  mv install_dir/tmp install_dir/include
+  mkdir install_dir/lib
+  mv install_dir/*.a install_dir/lib
+  mv install_dir/*.so install_dir/lib
   cd ..
 fi
 if [ -z "$(cat ${INSTRC} | grep "^export VOLTDB_ROOT=")" ]; then
-  echo "export VOLTDB_ROOT=$(pwd)/voltdb-client-cpp-${VOLTDB_VERSION}/install" >> ${INSTRC};
+  echo "export VOLTDB_ROOT=$(pwd)/voltdb-client-cpp-${VOLTDB_VERSION}/install_dir" >> ${INSTRC};
   echo "export LD_LIBRARY_PATH=\${VOLTDB_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC};
+  echo "export DYLD_LIBRARY_PATH=\${VOLTDB_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC};
   echo "export CMAKE_PREFIX_PATH=\${VOLTDB_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC};
 fi
 

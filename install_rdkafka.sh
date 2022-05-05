@@ -39,14 +39,14 @@ else
   exit 1
 fi
 
-if [ ! -d ./${RDKAFKA_DIR}/install ]; then
+if [ ! -d ./${RDKAFKA_DIR}/install_dir ]; then
   if [ ! -d ./${RDKAFKA_DIR} ]; then
     git clone --depth 1 http://github.com/edenhill/librdkafka --branch ${RDKAFKA_VERSION} ${RDKAFKA_DIR}
   fi
   cd ${RDKAFKA_DIR}
   ./configure\
     ${DEBUG}\
-    --prefix=$(pwd)/install\
+    --prefix=$(pwd)/install_dir\
     --disable-sasl\
     --disable-ssl\
     && make -j4\
@@ -55,8 +55,9 @@ if [ ! -d ./${RDKAFKA_DIR}/install ]; then
   cd ..
 fi
 if [ -z "$(cat ${INSTRC} | grep RDKAFKA_ROOT)" ]; then
-  echo "export RDKAFKA_ROOT=$(pwd)/librdkafka-${RDKAFKA_VERSION}/install" >> ${INSTRC}
+  echo "export RDKAFKA_ROOT=$(pwd)/librdkafka-${RDKAFKA_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${RDKAFKA_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${RDKAFKA_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${RDKAFKA_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

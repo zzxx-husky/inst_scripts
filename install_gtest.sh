@@ -34,14 +34,15 @@ if [ ! -d ./googletest-${GTEST_VERSION}/release ]; then
     -DBUILD_GMOCK=OFF\
     -DCMAKE_BUILD_TYPE=Release\
     -DCMAKE_CXX_STANDARD=11\
-    -DCMAKE_INSTALL_PREFIX=$(pwd)/install\
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/install_dir\
     && cmake --build release --target install -j4\
     || { exit 1; }
   cd ..
 fi
 if [ -z "$(cat ${INSTRC} | grep "^export GTEST_ROOT=")" ]; then
-  echo "export GTEST_ROOT=$(pwd)/googletest-${GTEST_VERSION}/install" >> ${INSTRC}
+  echo "export GTEST_ROOT=$(pwd)/googletest-${GTEST_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${GTEST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${GTEST_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${GTEST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

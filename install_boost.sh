@@ -33,7 +33,7 @@ if [ ! -z "${WITH_PYTHON}" ]; then
   WITH_PYTHON=" --with-python=${WITH_PYTHON} "
 fi
 
-if [ ! -d ./boost-${BOOST_VERSION}/install ]; then
+if [ ! -d ./boost-${BOOST_VERSION}/install_dir ]; then
   if [ ! -d ./boost-${BOOST_VERSION} ]; then
     echo "Downloading boost-${BOOST_VERSION}"
     wget -q http://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${VER}.tar.gz || { exit 1; }
@@ -43,17 +43,18 @@ if [ ! -d ./boost-${BOOST_VERSION}/install ]; then
     mv boost_${VER} boost-${BOOST_VERSION}
   fi
   cd boost-${BOOST_VERSION}
-  rm -rf $(pwd)/install/
+  rm -rf $(pwd)/install_dir/
   echo "Installing boost-${BOOST_VERSION}"
-  ./bootstrap.sh --prefix=$(pwd)/install/ ${WITH_PYTHON} || { exit 1; }
+  ./bootstrap.sh --prefix=$(pwd)/install_dir/ ${WITH_PYTHON} || { exit 1; }
   ./b2 --clean
   ./b2 -j4 threading=multi cxxflags="-fPIC" link=shared variant=release install || { exit 1; }
   cd ..
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export BOOST_ROOT=")" ]; then
-  echo "export BOOST_ROOT=$(pwd)/boost-${BOOST_VERSION}/install" >> ${INSTRC}
+  echo "export BOOST_ROOT=$(pwd)/boost-${BOOST_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${BOOST_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${BOOST_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${BOOST_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 

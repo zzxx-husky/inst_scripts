@@ -25,22 +25,23 @@ done
 
 cd ${DIR}
 
-if [ ! -d ./libunwind-${UNWIND_VERSION}/install ]; then
+if [ ! -d ./libunwind-${UNWIND_VERSION}/install_dir ]; then
   if [ ! -d ./libunwind-${UNWIND_VERSION} ]; then
     git clone --depth 1 https://github.com/libunwind/libunwind --branch ${UNWIND_VERSION} libunwind-${UNWIND_VERSION}
   fi
   cd libunwind-${UNWIND_VERSION}
   autoreconf -i\
-    && ./configure --prefix=$(pwd)/install\
+    && ./configure --prefix=$(pwd)/install_dir\
     && make -j4\
-    && make install prefix=$(pwd)/install\
+    && make install prefix=$(pwd)/install_dir\
     || { exit 1; }
   cd ..
 fi
 
 if [ -z "$(cat ${INSTRC} | grep "^export LIBUNWIND_ROOT=")" ]; then
-  echo "export LIBUNWIND_ROOT=$(pwd)/libunwind-${UNWIND_VERSION}/install" >> ${INSTRC}
+  echo "export LIBUNWIND_ROOT=$(pwd)/libunwind-${UNWIND_VERSION}/install_dir" >> ${INSTRC}
   echo "export LD_LIBRARY_PATH=\${LIBUNWIND_ROOT}/lib:\${LD_LIBRARY_PATH}" >> ${INSTRC}
+  echo "export DYLD_LIBRARY_PATH=\${LIBUNWIND_ROOT}/lib:\${DYLD_LIBRARY_PATH}" >> ${INSTRC}
   echo "export CMAKE_PREFIX_PATH=\${LIBUNWIND_ROOT}:\${CMAKE_PREFIX_PATH}" >> ${INSTRC}
 fi
 
